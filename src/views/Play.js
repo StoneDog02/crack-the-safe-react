@@ -1,21 +1,21 @@
-export function Play() {
+import { useRef, useState } from "react";
+import { VIEWS } from ".";
+
+export function Play({ setView, setFinishMsg }) {
   const word = "12-06-36";
   const wordArr = word.split("");
-  const guessedWord = "____________";
-  const guesses = [];
-  const wordElem = document.getElementById("wordElem");
+  const [guessedWord, setGuessedWord] = useState("____________");
+  const [guesses, setGuesses] = useState([]);
+  const [userGuess, setUserGuess] = useState("");
+  const inputElemRef = useRef(null);
+  const inputElem = inputElemRef.current;
+  const [feedback, setFeedback] = useState("");
 
-  const word = "12-06-36";
-  const wordArr = word.split("");
-  const guessedWord = "____________";
-  const guesses = [];
-  const wordElem = document.getElementById("wordElem");
-
-  wordElem.innerHTML = guessedWord;
-
-  function clearAndFocus(elem) {
-    elem.value = "";
-    elem.focus();
+  function clearAndFocusInput() {
+    setUserGuess("");
+    if (inputElem) {
+      inputElem.focus();
+    }
   }
 
   function updateGuessedWord(guesses) {
@@ -28,17 +28,15 @@ export function Play() {
         newGuessedWordArr.push("_");
       }
     }
-    // wordElem.innerHTML = guessedWord;
     return newGuessedWordArr.join("");
   }
 
-  function guess() {
-    const guessElem = document.getElementById("guessElem");
-    const userGuess = guessElem.value.toLowerCase();
+  function handleGuess() {
     if (guesses.includes(userGuess)) {
-      clearAndFocus(guessElem);
+      clearAndFocusInput();
       return giveFeedback("You guessed that :P " + guesses, "normal");
     }
+
     guesses.push(userGuess);
     if (!word.includes(userGuess)) {
       return giveFeedback("You guessed wrong", "fail");
@@ -46,9 +44,9 @@ export function Play() {
     giveFeedback("You guessed right", "success");
 
     const updatedWord = updateGuessedWord(guesses);
-    wordElem.innerHTML = updatedWord;
+    setGuessedWord(updatedWord);
 
-    clearAndFocus(guessElem);
+    clearAndFocusInput();
 
     if (word === updatedWord) {
       const numberOfGuesses = guesses.length;
@@ -57,9 +55,6 @@ export function Play() {
     moreGuesses(guesses.length);
   }
 
-  function setMessage(msg) {
-    localStorage.setItem("msg", msg);
-  }
   function moreGuesses(numberOfGuesses) {
     if (numberOfGuesses >= 15) {
       goToFinishPage("You lost, you took to many guesses");
@@ -67,29 +62,34 @@ export function Play() {
   }
 
   function goToFinishPage(msg) {
-    setMessage(msg);
-    window.location = "/finish.html";
+    setFinishMsg(msg);
+    setView(VIEWS.FINISH);
   }
 
   function giveFeedback(feedback, type) {
-    const feedbackElem = document.getElementById("feedback");
-    feedbackElem.innerHTML = feedback;
-    feedbackElem.className = type;
+    setFeedback(feedback);
+    // TODO: styles and classes :P
+    // feedbackElem.className = type;
   }
 
   return (
     <div className="game-container">
       <h3>Guess the combination</h3>
       <h1 className="word" id="wordElem">
-        12-06-36
+        {guessedWord}
       </h1>
       <div className="feedback"></div>
       <div>
-        <label id="feedback" for="guessElem" className="normal">
+        <label id="feedback" htmlFor="guessElem" className="normal">
           I am even. Half of me is the root of my last number. What is my code?
         </label>
-        <input onChange="" autofocus />
-        <button onClick="guess()">guess</button>
+        <input
+          ref={inputElemRef}
+          value={userGuess}
+          onChange={(event) => setUserGuess(event.target.value)}
+          autoFocus
+        />
+        <button onClick={handleGuess}>guess</button>
       </div>
     </div>
   );
