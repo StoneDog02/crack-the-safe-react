@@ -5,12 +5,6 @@ export function Play() {
   const guesses = [];
   const wordElem = document.getElementById("wordElem");
 
-  const word = "12-06-36";
-  const wordArr = word.split("");
-  const guessedWord = "____________";
-  const guesses = [];
-  const wordElem = document.getElementById("wordElem");
-
   wordElem.innerHTML = guessedWord;
 
   function clearAndFocus(elem) {
