@@ -4,7 +4,7 @@ import { VIEWS } from ".";
 export function Play({ setView, setFinishMsg }) {
   const word = "12-06-36";
   const wordArr = word.split("");
-  const [guessedWord, setGuessedWord] = useState("____________");
+  const [guessedWord, setGuessedWord] = useState("__-__-__");
   const [guesses, setGuesses] = useState([]);
   const [userGuess, setUserGuess] = useState("");
   const inputElemRef = useRef(null);
@@ -39,6 +39,7 @@ export function Play({ setView, setFinishMsg }) {
 
     guesses.push(userGuess);
     if (!word.includes(userGuess)) {
+      moreGuesses(guesses.length);
       return giveFeedback("You guessed wrong", "fail");
     }
     giveFeedback("You guessed right", "success");
@@ -56,7 +57,7 @@ export function Play({ setView, setFinishMsg }) {
   }
 
   function moreGuesses(numberOfGuesses) {
-    if (numberOfGuesses >= 15) {
+    if (numberOfGuesses >= 10) {
       goToFinishPage("You lost, you took to many guesses");
     }
   }
