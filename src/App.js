@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CONSTANTS } from "./constants";
 import "./styles.css";
 import { VIEWS } from "./views";
 import { Finish } from "./views/Finish";
@@ -7,7 +8,10 @@ import { Start } from "./views/Start";
 
 export default function App() {
   const [view, setView] = useState(VIEWS.START); //Start, Play, Finish
-  const [finishMsg, setFinishMsg] = useState("");
+  const [finishMsg, setFinishMsg] = useState({
+    title: CONSTANTS.WINNING_TITLE,
+    subtitle: CONSTANTS.WINNING_SUBTITLE
+  });
   return (
     <div className="App">
       {view === VIEWS.START ? <Start setView={setView} /> : null}
