@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { VIEWS } from ".";
 import { SafeDial } from "../components/SafeDial";
 import { CONSTANTS } from "../constants";
@@ -10,31 +10,43 @@ export function Play({ setView, setFinishMsg }) {
   const [guessedWord, setGuessedWord] = useState("_-_-_");
   const [guesses, setGuesses] = useState([""]);
   const [userGuess, setUserGuess] = useState(null);
+  const [inputGuess, setInputGuess] = useState(null);
   const inputElemRef = useRef(null);
   const inputElem = inputElemRef.current;
   const [feedback, setFeedback] = useState("");
 
-  function clearAndFocusInput() {
-    setUserGuess("");
-    if (inputElem) {
-      inputElem.focus();
-    }
-  }
-
-  function updateGuessedWord(guesses) {
-    let newGuessedWordArr = [];
-    for (let i = 0; i < word.length; i++) {
-      const letter = word[i];
-      if (guesses.includes(letter)) {
-        newGuessedWordArr.push(letter);
-      } else {
-        newGuessedWordArr.push("_");
+  const clearAndFocusInput = useCallback(
+    function clearAndFocusInput() {
+      console.log("Im clear and focusing!!");
+      debugger;
+      setInputGuess("");
+      if (inputElem) {
+        inputElem.focus();
       }
-    }
-    return newGuessedWordArr.join("-");
-  }
+    },
+    [inputElem]
+  );
+
+  const updateGuessedWord = useCallback(
+    function updateGuessedWord(guesses) {
+      let newGuessedWordArr = [];
+      for (let i = 0; i < word.length; i++) {
+        const letter = word[i];
+        if (guesses.includes(letter)) {
+          newGuessedWordArr.push(letter);
+        } else {
+          newGuessedWordArr.push("_");
+        }
+      }
+      return newGuessedWordArr.join("-");
+    },
+    [word]
+  );
 
   function handleGuess() {
+    if (userGuess === null) {
+      return;
+    }
     if (guesses.includes(userGuess)) {
       clearAndFocusInput();
       return giveFeedback("You guessed that :P " + guesses, "normal");
@@ -63,19 +75,25 @@ export function Play({ setView, setFinishMsg }) {
     moreGuesses(guesses.length);
   }
 
-  function moreGuesses(numberOfGuesses) {
-    if (numberOfGuesses >= 10) {
-      return goToFinishPage({
-        title: CONSTANTS.LOSING_TITLE,
-        subtitle: CONSTANTS.LOSING_SUBTITLE
-      });
-    }
-  }
+  const goToFinishPage = useCallback(
+    function goToFinishPage(msgObject) {
+      setFinishMsg(msgObject);
+      setView(VIEWS.FINISH);
+    },
+    [setFinishMsg, setView]
+  );
 
-  function goToFinishPage(msgObject) {
-    setFinishMsg(msgObject);
-    setView(VIEWS.FINISH);
-  }
+  const moreGuesses = useCallback(
+    function moreGuesses(numberOfGuesses) {
+      if (numberOfGuesses >= 10) {
+        return goToFinishPage({
+          title: CONSTANTS.LOSING_TITLE,
+          subtitle: CONSTANTS.LOSING_SUBTITLE
+        });
+      }
+    },
+    [goToFinishPage]
+  );
 
   function giveFeedback(feedback, type) {
     setFeedback(feedback);
@@ -83,33 +101,64 @@ export function Play({ setView, setFinishMsg }) {
     // feedbackElem.className = type;
   }
 
+  function handleInput(event) {
+    console.log("You changed!");
+    const newVal = event.target.value;
+    const numberVal = parseInt(event.target.value, 10);
+    if (isNaN(numberVal)) {
+      return setInputGuess(newVal);
+    }
+    return setInputGuess(numberVal);
+  }
+  useEffect(() => {
+    let handle = 0;
+    if (inputGuess !== "") {
+      setUserGuess(null);
+      handle = setTimeout(() => {
+        setUserGuess(inputGuess);
+      }, 1000);
+    }
+
+    return () => clearTimeout(handle);
+  }, [inputGuess, setUserGuess]);
+  useEffect(handleGuess, [
+    userGuess,
+    clearAndFocusInput,
+    goToFinishPage,
+    guesses,
+    moreGuesses,
+    word,
+    updateGuessedWord
+  ]);
+
   return (
-    <div className="game-container">
-      <SafeDial current={userGuess} numOfOptions={40} />
-      <h3>Guess the combination</h3>
-      <h1 className="word" id="wordElem">
-        {guessedWord}
-      </h1>
-      <div className="feedback">{feedback}</div>
-      <div>
-        <label id="feedback" htmlFor="guessElem" className="normal">
-          I am even. Half of me is the root of my last number. What is my code?
-        </label>
+    <>
+      <div className="game-container">
+        <SafeDial
+          current={userGuess}
+          numOfOptions={40}
+          correctValues={guesses.filter((guess) => word.includes(guess))}
+          wrongValues={guesses.filter((guess) => !word.includes(guess))}
+        />
+
         <input
           ref={inputElemRef}
-          value={userGuess}
-          onChange={(event) => {
-            const newVal = event.target.value;
-            const numberVal = parseInt(event.target.value, 10);
-            if (isNaN(numberVal)) {
-              return setUserGuess(newVal);
-            }
-            return setUserGuess(numberVal);
-          }}
+          value={inputGuess}
+          onChange={handleInput}
           autoFocus
         />
-        <button onClick={handleGuess}>guess</button>
+        {/* <button onClick={handleGuess}>guess</button> */}
       </div>
-    </div>
+      <div>
+        <h3>Guess the combination</h3>
+        <h1 className="word" id="wordElem">
+          {guessedWord}
+        </h1>
+        <div className="feedback">{feedback}</div>
+        <div id="feedback" htmlFor="guessElem" className="Hint">
+          I am even. Half of me is the root of my last number. What is my code?
+        </div>
+      </div>
+    </>
   );
 }

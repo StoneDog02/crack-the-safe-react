@@ -14,6 +14,7 @@ export default function App() {
   });
   return (
     <div className="App">
+      <h1 className="title">Crack The Safe</h1>
       {view === VIEWS.START ? <Start setView={setView} /> : null}
       {view === VIEWS.PLAY ? (
         <Play setView={setView} setFinishMsg={setFinishMsg} />

@@ -1,3 +1,16 @@
+html,
+body,
+#root,
+.App {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+
 body {
   margin: 0;
   height: 100vh;
@@ -6,13 +19,14 @@ body {
   flex-flow: column;
   justify-content: center;
   align-items: center;
-  background: black;
-  font-family: "Lato", sans-serif;
+  background: #887766;
+  /* font-family: 'Shadows Into Light', cursive; */
+  font-family: "Spartan", sans-serif;
 }
 
 .game-container {
   position: relative;
-  background: grey;
+  background: #181822;
   width: 600px;
   height: 600px;
   border-radius: 50%;
@@ -26,6 +40,8 @@ body {
 h1.title {
   text-align: center;
   font-size: 50px;
+  color: #181822;
+  margin: -84px 0 84px;
 }
 
 input,
@@ -33,20 +49,45 @@ button,
 a.start,
 a.again {
   border-radius: 4px;
-  font-size: 32px;
+  font-size: 72px;
   border: 2px solid black;
   color: white;
   padding: 8px 12px;
   text-decoration: none;
   text-transform: uppercase;
   align-items: center;
-  background: black;
+  background: #181822;
+  letter-spacing: 4px;
+}
+
+.Hint {
+  font-size: 24px;
 }
 
 input {
-  max-width: 50px;
-  margin: 12px 0 0;
   text-align: center;
+  height: 400px;
+  width: 400px;
+  margin: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 50px #000000cc;
+}
+
+button {
+  height: 400px;
+  width: 400px;
+  margin: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 50px #000000cc;
+  cursor: pointer;
+}
+button:hover {
+  color: #eeeeee99;
+}
+
+input:focus {
+  border-color: #eeeeee99;
+  outline: 0;
 }
 
 h1.word {
@@ -55,8 +96,18 @@ h1.word {
   font-size: 28px;
 }
 
-a.nope {
-  margin-top: 8px;
+button.nope {
+  background: none;
+  border: none;
+  font-size: 12px;
+}
+
+.nope:hover {
+  color: #00000070;
+}
+
+.again:hover {
+  color: #eeeeee99;
 }
 
 .success {
@@ -76,13 +127,9 @@ label {
   transition: 0.3s ease-in-out 0s;
   text-align: center;
 }
-.App {
-  font-family: sans-serif;
-  text-align: center;
-}
 
 div span {
-  font: 26px Monaco, MonoSpace;
+  font-size: 26px;
   height: 200px;
   position: absolute;
   width: 20px;
