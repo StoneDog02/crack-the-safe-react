@@ -6,7 +6,14 @@ import { CONSTANTS } from "../constants";
 export function Play({ setView, setFinishMsg }) {
   // const word = "12-06-36"; // [12,6,36]
   // const wordArr = word.split("");
-  const word = [12, 6, 36];
+  const [startNumber, setStartNumber] = useState(
+    (Math.floor(Math.random() * 4) + 3) * 2
+  );
+  const word = [
+    startNumber,
+    startNumber / 2,
+    (startNumber / 2) * (startNumber / 2)
+  ];
   const [guessedWord, setGuessedWord] = useState("_-_-_");
   const [guesses, setGuesses] = useState([""]);
   const [userGuess, setUserGuess] = useState(null);
@@ -17,9 +24,8 @@ export function Play({ setView, setFinishMsg }) {
 
   const clearAndFocusInput = useCallback(
     function clearAndFocusInput() {
-      console.log("Im clear and focusing!!");
-      debugger;
       setInputGuess("");
+      setUserGuess(null);
       if (inputElem) {
         inputElem.focus();
       }
@@ -150,13 +156,14 @@ export function Play({ setView, setFinishMsg }) {
         {/* <button onClick={handleGuess}>guess</button> */}
       </div>
       <div>
-        <h3>Guess the combination</h3>
+        {/* <h3>Guess the combination</h3>
         <h1 className="word" id="wordElem">
           {guessedWord}
         </h1>
-        <div className="feedback">{feedback}</div>
-        <div id="feedback" htmlFor="guessElem" className="Hint">
-          I am even. Half of me is the root of my last number. What is my code?
+        <div className="feedback">{feedback}</div> */}
+        <div id="feedback" htmlFor="guessElem" className="Hint sticky-note">
+          The first number is {startNumber}. The second number is half of the
+          first and is the root of the last number.
         </div>
       </div>
     </>
